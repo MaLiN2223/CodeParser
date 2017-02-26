@@ -1,39 +1,61 @@
-﻿namespace CodeParser.Structures
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using CodeParser.Helpers;
+using CodeParser.Interfaces;
+
+namespace CodeParser.Structures
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-    using System.Text.RegularExpressions;
-    using Interfaces;
 
     public class ClassData : IYamlable
     {
-        private static readonly Regex classRegex = new Regex(@"(public|private|internal)class(\w+)(:(.*))?");
-        private static readonly Regex commentRegex = new Regex(@"///\s*?<summary>\s*?///\s*?(.*)\s*?///\s*?</summary>", RegexOptions.Singleline);
 
         public ClassData(string namespaceName, string headLine, List<string> wholeCode, string comment)
         {
-            headLine = headLine.Replace("\t", "").Replace(" ", "");
             TextData = wholeCode;
-            var match = commentRegex.Match(comment);
+            var match = RegexHelpers.CommentRegex.Match(comment);
             if (match.Success)
             {
                 Comment = match.Groups[1].Value;
             }
-            match = classRegex.Match(headLine);
-
-            if (match.Success)
-            {
-                Access = match.Groups[1].Value;
-                Name = match.Groups[2].Value;
-                var inheritance = match.Groups[4].Value;
-                Inheritance = inheritance != "" ? inheritance : "object";
-                FullName = namespaceName + "." + Name;
-            }
+            header = new ClassHeader(namespaceName, headLine);
         }
+
         private void SelfParse()
         {
+            string comment = "";
+            for (int index = 0; index < TextData.Count; index++)
+            {
+                var line = TextData[index];
+                if (line.TrimStart().StartsWith("///"))
+                {
+                    comment += line;
+                    continue;
+                }
+                var match = RegexHelpers.MethodRegex.Match(line);
+                if (match.Success) // method found
+                {
+                    var lst = new List<string>();
+                    int brackets = line.Count(x => x == '{') - line.Count(x => x == '}');
+                    int j = index + 1;
+                    do
+                    {
+                        line = TextData[j];
+                        brackets += line.Count(x => x == '{');
+                        brackets -= line.Count(x => x == '}');
+                        lst.Add(TextData[j]);
+                        j++;
 
+                    } while (j < TextData.Count && brackets > 0);
+                    index = j;
+                    var data = new MethodData(match.Value, lst, comment);
+                    MethodList.Add(data);
+                    comment = "";
+                }
+            }
+            TextData = null;
 
         }
         public void Parse()
@@ -43,29 +65,25 @@
         public string ToYaml(int indentation = 0)
         {
             string indent = "";
-            for (int i = 0; i < indentation - 1; ++i)
+            for (int i = 0; i < indentation; ++i)
                 indent += "\t";
             StringBuilder builder = new StringBuilder();
-            builder.AppendLine($"{indent}\tfull name: {FullName}");
-            builder.AppendLine($"{indent}\tname: {Name}");
-            builder.AppendLine($"{indent}\taccess modifier: {Access}");
-            builder.AppendLine($"{indent}\tinheritance: {Inheritance}");
+            builder.AppendLine($"{indent}-{header.FullName}");
+            builder.AppendLine($"{indent}\tname: {header.Name}");
+            builder.AppendLine($"{indent}\tmodifiers: {header.Modifiers}");
+            builder.AppendLine($"{indent}\tinheritance: {header.Inheritence}");
             if (!string.IsNullOrEmpty(Comment))
                 builder.AppendLine($"{indent}\tcomment: {Comment}");
             builder.AppendLine($"{indent}\tmethods:");
             foreach (var methodData in MethodList)
             {
-                builder.Append(methodData.ToYaml(indentation + 2));
+                builder.Append(methodData.ToYaml(indentation + 1));
             }
             return builder.ToString();
         }
-        public string FullName { get; set; }
-        private string Access { get; set; }
-        private string Comment { get; set; }
-        private string Inheritance { get; set; }
-        private string Name { get; set; }
-        private bool IsPartial { get; set; } = false;
+        private string Comment { get; set; } 
         public List<MethodData> MethodList { get; set; } = new List<MethodData>();
         private List<string> TextData { get; set; }
+        private readonly ClassHeader header;
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace CodeParser.Structures
+﻿using CodeParser.Helpers;
+
+namespace CodeParser.Structures
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -7,14 +9,12 @@
     using Interfaces;
     public class NamespaceData : IYamlable
     {
-        private static readonly Regex classRegex = new Regex(@"(public|private|internal) class (\w+)");
-        private static readonly Regex commentRegex = new Regex(@"///\s*?<summary>\s*?///\s*?(.*)\s*?///\s*?</summary>", RegexOptions.Singleline);
 
         public NamespaceData(string headLine, List<string> wholeCode, string comment)
         {
             Name = headLine.Split(' ')[1];
             TextData = wholeCode;
-            var match = commentRegex.Match(comment);
+            var match = RegexHelpers.CommentRegex.Match(comment);
             if (match.Success)
             {
                 Comment = match.Groups[1].Value;
@@ -29,8 +29,9 @@
                 if (line.TrimStart().StartsWith("///"))
                 {
                     comment += line;
+                    continue;
                 }
-                var match = classRegex.Match(line);
+                var match = RegexHelpers.ClassHeaderRegex.Match(line);
                 if (match.Success)
                 {
                     var lst = new List<string>();
@@ -79,8 +80,8 @@
                 classData.Parse();
             }
         }
-        private string Comment { get; set; }
-        private string Name { get; set; }
+        private string Comment { get; }
+        private string Name { get; }
         private List<string> TextData { get; set; }
         public List<ClassData> ClassList { get; set; } = new List<ClassData>();
     }

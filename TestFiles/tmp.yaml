@@ -5,22 +5,34 @@
    classes:
    - SomeSweet.Namespace.Class:
       name: Class
-      modifiers:  public
-      inheritance:  IInterface, SomeObject
+      modifiers: [public]
+      inheritance: [IInterface,SomeObject]
       comment:  Test class    
       methods:
-       - :
-          name: 
-          access: 
+       - Foo:
+          name: Foo
+          type: Class
+          modifiers: [public]
+          arguments: [double a,  double b]
+          return type: int
           comment:  Foo documentation        
 
    - SomeSweet.Namespace.Class2:
       name: Class2
-      modifiers:  private
-      inheritance:  IInterface2, SomeObject2
+      modifiers: [private]
+      inheritance: [IInterface2,SomeObject2]
       methods:
-       - :
-          name: 
-          access: 
+       - Foo:
+          name: Foo
+          type: Class
+          modifiers: [public]
+          arguments: [double a,  double b]
+          return type: int
           comment:  Foo documentation        
+       - SomeSweet.Namespace.Class2.Bar:
+          name: Bar
+          type: Static
+          modifiers: [public, static]
+          arguments: [double a,  double b]
+          return type: int
 

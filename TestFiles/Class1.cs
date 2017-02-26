@@ -38,5 +38,15 @@ namespace SomeSweet.Namespace
         {
             return 0;
         }
+		/// <summary>
+        /// Foo documentation
+        /// </summary>
+        /// <param name="a">First parameter</param>
+        /// <param name="b">Second parameter</param>
+        /// <returns></returns>
+        public static int Bar(double a, double b)
+        {
+            return 0;
+        }
     }
 }

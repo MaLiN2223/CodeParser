@@ -2,37 +2,36 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using CodeParser.Extensions;
 using CodeParser.Helpers;
 using CodeParser.Interfaces;
-using CodeParser.Helpers;
+
 namespace CodeParser.Structures
 {
     public class MethodData : IYamlable
     {
-        public MethodData(string headLine, List<string> wholeCode, string comment)
+        public MethodData(string headLine, string comment, string className)
         {
             var match = RegexHelpers.CommentRegex.Match(comment);
             if (match.Success)
             {
                 Comment = match.Groups[1].Value;
             }
-        }
-        public void Parse()
-        {
-            //TODO: parse
-        }
-        public string FullName { get; set; }
-        private string Access { get; set; }
+            header = new MethodHeader(headLine, className);
+
+        } 
+        private MethodHeader header { get; }
         private string Comment { get; set; }
-        public string Name { get; set; }
-        public List<ArgumentData> ArgumentList { get; set; }
         public string ToYaml(int indentation = 0)
         {
             string indent = YamlHelpers.GenerateIndent(indentation);
             StringBuilder builder = new StringBuilder();
-            builder.AppendLine($"{indent}- {FullName}:");
-            builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}name: {Name}");
-            builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}access: {Access}");
+            builder.AppendLine($"{indent}- {header.FullName}:");
+            builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}name: {header.Name}");
+            builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}type: {header.Type}");
+            builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}modifiers: [{header.Modifiers.AggregateToString(", ")}]");
+            builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}arguments: [{header.Arguments.AggregateToString(", ")}]");
+            builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}return type: {header.ReturnType}");
             if (!string.IsNullOrEmpty(Comment))
                 builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}comment: {Comment}");
             return builder.ToString();

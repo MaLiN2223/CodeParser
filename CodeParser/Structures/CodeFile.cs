@@ -1,12 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace CodeParser.Structures
 {
-    using System.Runtime.InteropServices;
-    using System.Text.RegularExpressions;
 
     public class FileData
     {
@@ -21,7 +18,7 @@ namespace CodeParser.Structures
         {
             Namespaces = namespaces;
         }
-        public List<NamespaceData> Namespaces { get; set; }
+        public List<NamespaceData> Namespaces { get; }
         private static readonly Regex namespaceRegex = new Regex(@"^namespace (.*)[{]?");
         public static FileData FromFile(string[] fileText)
         {
@@ -52,7 +49,7 @@ namespace CodeParser.Structures
                     index = j;
                     var data = new NamespaceData(match.Value, lst, comment);
                     namespaces.Push(data);
-                    comment = ""; 
+                    comment = "";
                 }
             }
             var list = new List<NamespaceData>(namespaces);

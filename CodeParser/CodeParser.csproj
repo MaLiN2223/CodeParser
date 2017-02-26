@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\ListStringExtensions.cs" />
     <Compile Include="Helpers\DirectoriesHelper.cs" />
     <Compile Include="Helpers\FilesHelpers.cs" />
     <Compile Include="Helpers\RegexHelpers.cs" />
@@ -47,7 +48,8 @@
     <Compile Include="Interfaces\IYamlable.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Structures\ArgumentData.cs" />
+    <Compile Include="Structures\CommentData.cs" />
+    <Compile Include="Structures\PropertyData.cs" />
     <Compile Include="Structures\ClassData.cs" />
     <Compile Include="Structures\ClassHeader.cs" />
     <Compile Include="Structures\CodeFile.cs" />

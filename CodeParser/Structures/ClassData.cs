@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using CodeParser.Extensions;
 using CodeParser.Helpers;
 using CodeParser.Interfaces;
 
@@ -37,7 +38,6 @@ namespace CodeParser.Structures
                 var match = RegexHelpers.MethodRegex.Match(line);
                 if (match.Success) // method found
                 {
-                    var lst = new List<string>();
                     int brackets = line.Count(x => x == '{') - line.Count(x => x == '}');
                     int j = index + 1;
                     do
@@ -45,13 +45,29 @@ namespace CodeParser.Structures
                         line = TextData[j];
                         brackets += line.Count(x => x == '{');
                         brackets -= line.Count(x => x == '}');
-                        lst.Add(TextData[j]);
                         j++;
 
                     } while (j < TextData.Count && brackets > 0);
                     index = j;
-                    var data = new MethodData(match.Value, lst, comment);
-                    MethodList.Add(data);
+                    var data = new MethodData(match.Value, comment, header.FullName);
+                    StructuresList.Add(data);
+                    comment = "";
+                }
+                match = RegexHelpers.PropertyRegex.Match(line);
+                if (match.Success)
+                {
+                    int brackets = line.Count(x => x == '{') - line.Count(x => x == '}'); int j = index + 1;
+                    do
+                    {
+                        line = TextData[j];
+                        brackets += line.Count(x => x == '{');
+                        brackets -= line.Count(x => x == '}');
+                        j++;
+
+                    } while (j < TextData.Count && brackets > 0);
+                    index = j;
+                    var data = new PropertyData(match.Value, comment);
+                    StructuresList.Add(data);
                     comment = "";
                 }
             }
@@ -68,19 +84,19 @@ namespace CodeParser.Structures
             StringBuilder builder = new StringBuilder();
             builder.AppendLine($"{indent}- {header.FullName}:");
             builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}name: {header.Name}");
-            builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}modifiers: {header.Modifiers}");
-            builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}inheritance: {header.Inheritence}");
+            builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}modifiers: [{header.Modifiers.AggregateToString(",")}]");
+            builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}inheritance: [{header.Inheritence.AggregateToString(",")}]");
             if (!string.IsNullOrEmpty(Comment))
                 builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}comment: {Comment}");
             builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}methods:");
-            foreach (var methodData in MethodList)
+            foreach (var structureData in StructuresList)
             {
-                builder.Append(methodData.ToYaml(indentation + 1 + YamlHelpers.ListIndentSize));
+                builder.Append(structureData.ToYaml(indentation + 1 + YamlHelpers.ListIndentSize));
             }
             return builder.ToString();
         }
         private string Comment { get; set; }
-        public List<MethodData> MethodList { get; set; } = new List<MethodData>();
+        public List<IYamlable> StructuresList { get; set; } = new List<IYamlable>();
         private List<string> TextData { get; set; }
         private readonly ClassHeader header;
     }

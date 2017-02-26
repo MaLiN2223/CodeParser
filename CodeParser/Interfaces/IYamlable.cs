@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CodeParser.Interfaces
 {
-    interface IYamlable
+    public interface IYamlable
     {
         string ToYaml(int indentation = 0);
     }

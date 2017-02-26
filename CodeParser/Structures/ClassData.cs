@@ -64,24 +64,22 @@ namespace CodeParser.Structures
         }
         public string ToYaml(int indentation = 0)
         {
-            string indent = "";
-            for (int i = 0; i < indentation; ++i)
-                indent += "\t";
+            string indent = YamlHelpers.GenerateIndent(indentation);
             StringBuilder builder = new StringBuilder();
-            builder.AppendLine($"{indent}-{header.FullName}");
-            builder.AppendLine($"{indent}\tname: {header.Name}");
-            builder.AppendLine($"{indent}\tmodifiers: {header.Modifiers}");
-            builder.AppendLine($"{indent}\tinheritance: {header.Inheritence}");
+            builder.AppendLine($"{indent}- {header.FullName}:");
+            builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}name: {header.Name}");
+            builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}modifiers: {header.Modifiers}");
+            builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}inheritance: {header.Inheritence}");
             if (!string.IsNullOrEmpty(Comment))
-                builder.AppendLine($"{indent}\tcomment: {Comment}");
-            builder.AppendLine($"{indent}\tmethods:");
+                builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}comment: {Comment}");
+            builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}methods:");
             foreach (var methodData in MethodList)
             {
-                builder.Append(methodData.ToYaml(indentation + 1));
+                builder.Append(methodData.ToYaml(indentation + 1 + YamlHelpers.ListIndentSize));
             }
             return builder.ToString();
         }
-        private string Comment { get; set; } 
+        private string Comment { get; set; }
         public List<MethodData> MethodList { get; set; } = new List<MethodData>();
         private List<string> TextData { get; set; }
         private readonly ClassHeader header;

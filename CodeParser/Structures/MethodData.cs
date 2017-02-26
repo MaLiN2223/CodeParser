@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using CodeParser.Helpers;
 using CodeParser.Interfaces;
-
+using CodeParser.Helpers;
 namespace CodeParser.Structures
 {
     public class MethodData : IYamlable
@@ -28,15 +28,13 @@ namespace CodeParser.Structures
         public List<ArgumentData> ArgumentList { get; set; }
         public string ToYaml(int indentation = 0)
         {
-            string indent = "";
-            for (int i = 0; i < indentation - 1; ++i)
-                indent += "\t";
+            string indent = YamlHelpers.GenerateIndent(indentation);
             StringBuilder builder = new StringBuilder();
-            builder.AppendLine($"{indent}\tfull name: {FullName}");
-            builder.AppendLine($"{indent}\tname: {Name}");
-            builder.AppendLine($"{indent}\taccess: {Access}");
+            builder.AppendLine($"{indent}- {FullName}:");
+            builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}name: {Name}");
+            builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}access: {Access}");
             if (!string.IsNullOrEmpty(Comment))
-                builder.AppendLine($"{indent}\tcomment: {Comment}"); 
+                builder.AppendLine($"{indent}{YamlHelpers.PropertyIndentSpace}comment: {Comment}");
             return builder.ToString();
         }
     }

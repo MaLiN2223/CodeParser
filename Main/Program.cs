@@ -8,9 +8,8 @@
         static void Main(string[] args)
         {
             var parser = new Parser();
-            var data = parser.ParseFile("../../../TestFiles/Class1.cs", "tmp.yaml");
-            Console.WriteLine(data);
-            Console.ReadKey();
+            parser.ParseFile("../../../TestFiles/Class1.cs", "../../../TestFiles/tmp.yaml");
+            Console.WriteLine("done"); 
         }
     }
 }

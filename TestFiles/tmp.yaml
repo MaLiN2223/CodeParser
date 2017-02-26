@@ -1,0 +1,26 @@
+
+- SomeSweet.Namespace:
+   name: SomeSweet.Namespace
+   comment: Namespace summary
+   classes:
+   - SomeSweet.Namespace.Class:
+      name: Class
+      modifiers:  public
+      inheritance:  IInterface, SomeObject
+      comment:  Test class    
+      methods:
+       - :
+          name: 
+          access: 
+          comment:  Foo documentation        
+
+   - SomeSweet.Namespace.Class2:
+      name: Class2
+      modifiers:  private
+      inheritance:  IInterface2, SomeObject2
+      methods:
+       - :
+          name: 
+          access: 
+          comment:  Foo documentation        
+

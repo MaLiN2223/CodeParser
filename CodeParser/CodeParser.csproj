@@ -43,6 +43,7 @@
     <Compile Include="Helpers\DirectoriesHelper.cs" />
     <Compile Include="Helpers\FilesHelpers.cs" />
     <Compile Include="Helpers\RegexHelpers.cs" />
+    <Compile Include="Helpers\YamlHelpers.cs" />
     <Compile Include="Interfaces\IYamlable.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -34,6 +34,7 @@ namespace CodeParser.Structures
             {
                 ++i;
             }
+            ++i;
             while (i < splitted.Length)
             {
                 inheritence.Add(splitted[i]);

@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CodeParser
 {
@@ -12,15 +11,16 @@ namespace CodeParser
     {
         public void ParseDirectory(string inputPath, string outputPath)
         {
-
+            throw new NotImplementedException();
         }
 
-        public string ParseFile(string inputPath, string outputPath)
+        public void ParseFile(string inputPath, string outputPath)
         {
             var file = System.IO.File.ReadAllLines(inputPath);
             var output = FileData.FromFile(file);
             output.Parse();
-            return output.Namespaces.Select(x => x.ToYaml(0)).Aggregate("", (x, y) => x + "\n" + y);
+            var toFile = output.Namespaces.Select(x => x.ToYaml()).Aggregate("", (x, y) => x + "\n" + y);
+            File.WriteAllText(outputPath, toFile);
 
         }
     }
